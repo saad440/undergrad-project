@@ -1,0 +1,123 @@
+\chapter{Code: Numerical Solver}
+
+Some extra bits of code to help check if a bipartite state's ket vector can be separated numerically.\\
+A copy can be obtained from\\
+https://github.com/saad440/undergrad-project 
+
+\begin{verbatim}
+# -*- coding: utf-8 -*-
+"""
+This module contains simple solver functions to check if a given state
+ac|00>+ad|01>+bc|10>+bd|11> is separable and if it is, solve for a,b,c,d.
+
+Project: Investigation of Entanglement Measures in QuTiP
+         (IIUI, Fall 2015)
+
+@author: Muhammad Saad <muhammad.saad@yandex.com>
+"""
+
+__all__ =  ['solve_coefficients', 'verify_separability',
+            'is_separable_coeffs', 'is_separable']
+
+from scipy.optimize import fsolve
+import numpy as np
+
+def solve_coefficients(coeffprod):
+    """ Simple solver to separate a,b,c,d from products ac,ad,bc,bd
+    
+    Parameters
+    ----------
+    coeffprod : list
+                [ac,ad,bc,bd] of which to separate a, b, c and d.
+    
+    -------
+    z :       list
+                The solutions [a,b,c,d]
+
+    Examples
+    --------
+    >>> 
+    
+    """
+    ac,ad,bc,bd = coeffprod
+    def f(x):
+        a,b,c,d = x
+        r = np.zeros(4)
+        r[0] = a*c - ac
+        r[1] = a*d - ad
+        r[2] = b*c - bc
+        r[3] = b*d - bd
+        return r
+    z = fsolve(f,[1,1,1,1])
+    return z
+
+def verify_separability(coeffprod,coeffsepd,tol=6):
+    """ Verify that the solutions obtained are actually valid
+    
+    Parameters
+    ----------
+    coeffprod : list
+                [ac,ad,bc,bd] of which to separate a, b, c and d.
+    coeffsepd : list
+                [a,b,c,d], the solutions obtained from solve_coefficients
+    
+    -------
+    vrfy :      bool
+                True: match, False: donot match
+    
+    """
+    a,b,c,d = coeffsepd
+    ac,ad,bc,bd = coeffprod
+    vrfy = [np.round((a*c-ac),tol)==0, np.round((a*d-ad),tol)==0,
+            np.round((b*c-bc),tol)==0, np.round((b*d-bd),tol)==0]
+    if all(vrfy):
+        return True
+        
+def is_separable_coeffs(coeffprod,tol=6):
+    """ Check whether a list of coefficients to a state is separable
+    
+    Parameters
+    ----------
+    coeffprod : list
+                [ac,ad,bc,bd] of which to separate a, b, c and d.
+    tol :       int
+                rounding error tolerance
+    
+    -------
+    separable : bool
+                True: Coefficients are separable, False: not separable
+    
+    """
+    ac,ad,bc,bd = coeffprod
+    a,b,c,d = solve_coefficients(coeffprod)
+    coeffsepd = a,b,c,d
+    separable = verify_separability(coeffprod,coeffsepd)
+    return bool(separable)
+    
+def is_separable(kt,tol=6):
+    """ Check whether a state vector represents a separable state
+    Note: Currently limited to 2-level product states of two particles
+    
+    Parameters
+    ----------
+    kt  :       ket state vector
+                [ac,ad,bc,bd] of which to separate a, b, c and d.
+    tol :       int
+                rounding error tolerance
+    
+    -------
+    separable : bool
+                True: State is separable, False: not separable
+    
+    """
+    # Current limitations. Need to generalize
+    limitations = [ kt.isket, kt.shape==[4,1] ] # kt.dims==[[2,2],[1,1]]
+    if not all(limitations):
+        raise ValueError("Currently limited to 2-level product states of 2 particles")
+    ac,ad,bc,bd = kt.full()
+    ac,ad,bc,bd = ac[0],ad[0],bc[0],bd[0]
+    coeffprod = ac,ad,bc,bd
+    is_sp = is_separable_coeffs(coeffprod,tol)
+    return is_sp
+\end{verbatim}
+

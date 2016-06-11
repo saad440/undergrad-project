@@ -1,0 +1,65 @@
+\documentclass[a4paper,11pt,oneside]{book}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{mathtools}
+\usepackage{braket}
+\usepackage{float}
+\usepackage[backend=biber,sorting=none]{biblatex}
+\addbibresource{references.bib}
+\usepackage[bookmarks]{hyperref}
+
+\makeatletter
+\title{Investigation of Entanglement Measures in the Quantum Toolbox in Python (QuTiP)}  \let\Title\@title
+\author{Muhammad Saad}                                \let\Author\@author
+\newcommand{\supervisor}{Dr. Jamil Raza}
+\date{Fall 2015}                                      \let\Date\@date
+\makeatother
+
+
+\hypersetup{
+    pdftitle={\Title},
+    pdfauthor={\Author},
+    pdfsubject={Quantum Information Theory},
+    pdfkeywords={qit, quantum, entanglement, quantum entanglement, quantum information, python},
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=1,
+    %colorlinks=true,
+    pdfstartview=Fit,
+    pdfpagemode=UseOutlines,
+    pdfpagelayout=TwoPageRight
+}
+
+
+\begin{document}
+
+\input{./title/titlepage}
+
+\frontmatter
+\input{./chapters/abstract}
+\input{./chapters/acknowledgements}
+\newpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
+\tableofcontents
+\input{./chapters/overview}
+
+\mainmatter
+\input{./chapters/chapter-01}
+\input{./chapters/chapter-02}
+\input{./chapters/chapter-03}
+\input{./chapters/chapter-04}
+\input{./chapters/chapter-05}
+\input{./chapters/chapter-06}
+\input{./chapters/chapter-07}
+
+\nocite{*}
+\printbibliography[title={References}]
+
+\appendix
+\input{./chapters/appendix-a}
+\input{./chapters/appendix-b}
+
+\end{document}
+

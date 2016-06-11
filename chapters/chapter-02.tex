@@ -1,0 +1,172 @@
+\chapter{Quantum Mechanics: The Basics}
+
+This chapter is a brief review of the fundamental quantum mechanics necessary for our treatment of quantum information theory. In here we discuss the basic mathematical objects and tools we shall deal with in the next chapter.
+
+\section{Representing a Quantum Mechanical State}
+\par The quantum mechanical state of a system is represented by a vector $\Ket{\psi}$ in the complex vector space known as the Hilbert space. In this section we see how such a state is constructed.
+\par Let us consider a two-level quantum system such as a spin-half particle. Its state can be written in terms of two basis states which represent spin-up and spin-down. We can call these basis states $\Ket{0}$ and $\Ket{1}$ which are two orthogonal and normalized vectors in the Hilbert space.
+\begin{align*}
+\Ket{0} = \left(\! \begin{array}{c} 1 \\ 0 \end{array} \!\right) \\
+\Ket{1} = \left(\! \begin{array}{c} 0 \\ 1 \end{array} \!\right)
+\end{align*}
+In such case the general state of the particle can be written as
+\begin{align*}
+\Ket{\psi} = \alpha \Ket{0} + \beta \Ket{1}
+\end{align*}
+\par When the particle's spin along an axis is measured, it collapses to one of these two states $\Ket{0}$ and $\Ket{1}$ with probabilities $|\alpha|^2$ and $|\beta|^2$ respectively with the condition that
+\begin{align*}
+|\alpha|^2 + |\beta|^2 = 1
+\end{align*}
+\par Instead of the basis states chosen above we could have chosen any other other as long as they are orthogonal and normalized so that they represent perfectly distinguishable outcomes in an experiment. One such example would be
+\begin{center}
+$ \frac{1}{\sqrt{2}} \left(\! \begin{array}{c} 1 \\ 1 \end{array} \!\right) $ and $ \frac{1}{\sqrt{2}} \left(\! \begin{array}{c} -1 \\ 1 \end{array} \!\right) $
+\end{center}
+The important point is that the chosen basis has to be consistent across our calculations. That is, when we bring physical quantities together in a calculation they have to be represented in the same basis. If they are not then they will need to be rotated into one standard basis. This operation of rotation is called a unitary transformation and represented by a matrix $U$ such that $U U^\dagger = U^\dagger U = I$. Unitary transformations have the property that they do not change the physically observable outcomes. Under a unitary transformation the predictions for all those observables will remain the same.
+\par After establishing the general idea let us now look at an example state we may represent in this way.
+\begin{align*}
+  \Ket{\psi} &= \frac{2}{\sqrt{5}} \Ket{0} + \frac{1}{\sqrt{5}} \Ket{1} \\
+  &= \frac{2}{\sqrt{5}} \left(\! \begin{array}{c} 1 \\ 0 \end{array} \!\right) + \frac{1}{\sqrt{5}} \left(\! \begin{array}{c} 0 \\ 1 \end{array} \!\right) \\
+  &= \frac{1}{\sqrt{5}} \left(\! \begin{array}{c} 2 \\ 1 \end{array} \!\right)
+\end{align*}
+\par In this case we see that $\alpha = \frac{2}{\sqrt{5}}$ and $\beta = \frac{1}{\sqrt{5}}$.
+\section{Pure States and Mixed States}
+In terms of information that we have about the preparation of a quantum mechanical state, we identify it as either a pure state or as a mixed state.
+\subsection{Pure State}
+\par A pure state is a state for which we have complete knowledge about the preparation procedure. We already know in advance how the state was prepared, which, in principle is all that we can know about the system. The example of $\Ket{\psi}$ in the previous section is that of a pure state. We have a single state $\Ket{\psi}$ with 100\% certainty and the predictions we can make about it can be no more accurate than they are with our current knowledge of it.
+\par At this point it will be appropriate to introduce a more general representation of a quantum mechanical state than a simple ket vector. This representation we are going to introduce is called the \textbf{density operator or density matrix}.
+\subsection{The Density Operator}
+\par The density operator for a state $\Ket{\psi}$ is simply a projection operator that projects all the vectors onto the state vector $\Ket{\psi}$.
+\par If $\Ket{\psi}$ is represented by the column vector
+\begin{align*}
+\Ket{\psi} = \left(\! \begin{array}{c} a \\ b \end{array} \!\right)
+\end{align*}
+Then the density operator for the state would be
+\begin{align*}
+  \hat{\rho} = \Ket{\psi} \Bra{\psi} &= \begin{pmatrix} a \\ b \end{pmatrix} \begin{pmatrix} a^* & b^* \end{pmatrix} \\
+  &= \begin{pmatrix} |a|^2 & a b^* \\ a^* b & |b|^2 \end{pmatrix}
+\end{align*}
+\par From this density operator we can determine outcomes of physical experiments. In quantum mechanics physical observable quantities are represented by Hermitian operators. Suppose we apply an observable $\hat{O}$ to the density matrix which is the mathematical equivalent of performing the observation in an experiment. The state will collapse and the outcome of the experiment will have the expectation value of
+\begin{align*}
+  \braket{\hat{O}} &= tr\{\hat{O} \Ket{\psi} \Bra{\psi}\} \\
+  \braket{\hat{O}} &= tr\{\hat{O} \hat{\rho}\}
+\end{align*}
+Here $tr$ represents the trace operation, which is taking the sum of all entries on the main diagonal of the matrix.
+
+\subsection{Mixed State}
+\par In general when we deal with quantum systems in the real world, we will not have complete knowledge on how the state was prepared. This lack of knowledge can be due to several factors. It can be caused by errors in the apparatus that prepares the quantum state or it can be introduced later by environmental factors. In both cases we will not have a pure state with 100\% certainty.
+\par Let us take a look at a real world example. Suppose we want to prepare a number of atoms in state $\ket{\psi_0}$. We have an apparatus to do that for us. However due to some random error in the machinery some of the atoms are prepared in state $\ket{\psi_1}$ instead. Let's suppose the state we want, $\ket{\psi_0}$, is prepared with a 95\% accuracy. Then the rest of the atoms we get from the machine - 5\% of them - will be in state $\ket{\psi_1}$. In this case we have a mixed state.
+\par Notice that the probabilities involving the states are no longer limited to the quantum domain. There are now classical probabilities involved as well. 0.95 is the classical probability of $\ket{\psi_0}$ occurring in the mix and 0.05 is the classical probability of $\ket{\psi_1}$ occurring.
+\par In general, we will have a mixture of more than one states each occurring with its respective classical probability. $\ket{\psi_0}$ with probability $p_0$, $\ket{\psi_1}$ with probability $p_1$, $\ket{\psi_2}$ with probability $p_2$, and so on.
+
+\subsection{Density Operator for Mixed States}
+\par For a mixture of a number of quantum states where each state $\ket{\psi_i}$ occurs with classical probability $p_i$, the density operator is written as
+\begin{align*}
+\hat{\rho} = \sum_i \ket{\psi_i} \bra{\psi_i}
+\end{align*}
+\par As we saw in the case of pure states, expectation values for experimental outcomes are calculated in a similar fashion. If $\hat{O}$ is the operator representing the observable quantity, then the expectation value for the operator will be given by
+\begin{align*}
+\braket{\hat{O}} = tr\{\hat{O}\hat{\rho}\}
+\end{align*}
+\par Similarly, we can calculate the probability of finding the system in a state $\ket{\sigma}$ by constructing the projection operator for that state $\ket{\sigma} \bra{\sigma}$ and applying it to the density operator $\hat{\rho}$ representing our system.
+\begin{align*}
+Prob_{\ket{\sigma}} = tr\{ \ket{\sigma} \bra{\sigma} \hat{\rho} \}
+\end{align*}
+
+\subsection{Basic properties of the density operator}
+\par For a physically realizable state the density operator will always have the properties that
+\begin{enumerate}
+  \item It will be Hermitian
+  \item It will have trace 1:
+  $ tr\{\hat{\rho}\} = 1 $
+\end{enumerate}
+\par There is another additional property that will help us differentiate between density matrices for pure states and mixed states.
+\begin{itemize}
+  \item For a pure state, $ tr\{ \hat{\rho}^2 \} = 1 $
+  \item For a mixed state, $ tr\{ \hat{\rho}^2 \} < 1 $
+\end{itemize}
+
+\section{Joint State of two Systems}
+\par So far we have dealt with quantum mechanical states of isolated particles. What will happen if we consider the joint state of more than one such particles? Classical intuition says that the joint state consisting of two subsystems A and B at any time can be completely specified simply by specifying the states of A and B individually. It turns out that this idea does not always work in the domain of quantum mechanics. In quantum mechanics, the joint state of two or more subsystems is specified by their \textit{tensor product}. Let us take a look at a simple example to get some understanding of tensor products and joint states.
+\par Suppose we have two atoms whose states are specified by $\ket{\psi_A}$ and $\ket{\psi_B}$.
+\begin{align*}
+  \ket{\psi_A} = \begin{pmatrix} a \\ b \end{pmatrix} \\
+  \ket{\psi_B} = \begin{pmatrix} c \\ d \end{pmatrix}
+\end{align*}
+The joint state for $\ket{\psi_A}$ and $\ket{\psi_B}$ will be represented by the tensor product
+\begin{align*}
+  \ket{\psi_{AB}} &= \ket{\psi_A} \otimes \ket{\psi_B} \\
+                &= \begin{pmatrix} a \\ b \end{pmatrix} \otimes \begin{pmatrix} c \\ d \end{pmatrix} \\
+                &= \begin{pmatrix} ac \\ ad \\ bc \\ bd \end{pmatrix}
+\end{align*}
+Tensor products for higher dimensional vectors are obtained by component-wise multiplication in a similar fashion.
+\par Let us now take a look at a simple example for joint state of two atoms where atom A is in the ground state $\ket{0}$ and atom B is in the excited sate $\ket{1}$. The joint state of both particles will be
+\begin{align*}
+  \ket{\psi_{AB}} &= \ket{0}_A \ket{1}_B \\
+                  &= \begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix}
+\end{align*}
+\par This suggests a more compact way of writing a joint state of two particles in our extended four-dimensional Hilbert space.
+\begin{align*}
+  \ket{\psi_{AB}} &= ac \ket{0}_A \ket{0}_B + ad \ket{0}_A \ket{1}_B + bc \ket{1}_A \ket{0}_B + bd \ket{1}_A \ket{1}_B 
+\end{align*}
+where the four basis vectors represent possible combinations of ground and excited states of atoms A and B and the corresponding co-efficients squared are the probabilities of finding that particular combination. For example, $|ad|^2$ is the probability of the state collapsing to atom A in ground state and atom B in excited state. 
+
+\subsection{Operators for Joint States}
+\par We have seen how joint states of two particles are given by tensor products which extend the systems to a higher dimensional Hilbert space. In our example two particles in their respective two-dimensional Hilbert spaces were extended to a four-dimensional Hilbert space. That means that the operators that work on those states will also be 4x4 matrices in the 4-D Hilbert space.
+\par Suppose $\hat{O}_A$ and $\hat{O}_B$ are different observables acting respectively on the Hilbert space of particle A and particle B. The joint observable will be a tensor product of the two.
+\begin{align*}
+  \hat{O}_{AB} &= \hat{O}_A \otimes \hat{O}_B \\
+               &= \begin{pmatrix} a_1 & b_1 \\ c_1 & d_1 \end{pmatrix} \otimes \begin{pmatrix} a_2 & b_2 \\ c_2 & d_2 \end{pmatrix} \\
+               &= \begin{pmatrix} 
+                    a_1 a_2 & a_1 b_2 & b_1 a_2 & b_1 b_2 \\
+                    a_1 c_2 & a_1 d_2 & b_1 c_2 & b_1 d_2 \\
+                    c_1 a_2 & c_1 b_2 & d_1 a_2 & d_1 b_2 \\
+                    c_1 c_2 & c_1 d_2 & d_1 c_2 & d_1 d_2
+                  \end{pmatrix}
+\end{align*}
+\par As a simple exercise let us construct a projection operator for projecting atom A on its ground state and atom B on its excited state. The isolated projector for A in this case is $\ket{0} \bra{0}$ and for B it is $\ket{1} \bra{1}$. The joint projector will be a tensor product of the two.
+\begin{align*}
+  \ket{0} \bra{0} \otimes \ket{1} \bra{1} &= \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix} \otimes \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix} \\
+  &= \begin{pmatrix} 0 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{pmatrix}
+\end{align*}
+\par We can apply this joint projection operator to a density operator for a joint state in a 4-D Hilbert space and take the trace to find out the probability for the outcome where A is in $\ket{0}$ and B is in $\ket{1}$.
+
+\subsection{Partial Trace and the Reduced Density Operator}
+\par Just like the example of joining two operators to form a combined operator in the enlarged Hilbert space, we can also take the tensor product of two density operators (or density matrices) to form the combined density operator for two particles A and B.
+\begin{align*}
+\hat{\rho}_{AB} = \hat{\rho}_A \otimes \hat{\rho}_B
+\end{align*}
+\par But what if we needed to do the inverse? Sometimes we will have a situation where we need to find the density matrix $\hat{\rho}_A$ from a combined density matrix $\hat{\rho}_{AB}$. The mathematical operation for that is called a partial trace over B and is denoted by
+\begin{align*}
+\hat{\rho}_A = tr_B\{ \hat{\rho}_{AB} \}
+\end{align*}
+We trace out system B and are left with only system A.
+\par For a 4x4 density matrix, the partial trace over B to get the 2x2 density matrix for A looks like this.
+\begin{align*}
+\begin{pmatrix} a & b & c & d \\ e & f & g & h \\ i & j & k & l \\ m & n & o & p \end{pmatrix}
+\rightarrow
+\begin{pmatrix} a+f & c+h \\ i+n & k+p \end{pmatrix}
+\end{align*}
+
+\section{Entangled States}
+\par In the previous section, we saw how we can write the product state of two particles as
+\begin{align*}
+\ket{\psi_{AB}} = ac \ket{0}_A \ket{0}_B + ad \ket{0}_A \ket{1}_B + bc \ket{1}_A \ket{0}_B + bd \ket{1}_A \ket{1}_B
+\end{align*}
+Now let us take a look at an interesting case.
+\begin{align*}
+  \ket{\psi_{AB}} = \frac{1}{\sqrt{2}} \ket{0}_A \ket{0}_B + \frac{1}{\sqrt{2}} \ket{1}_A \ket{1}_B 
+\end{align*}
+What we have here is a state for which there is an equal probability of both particles being in their ground state or both being in their excited state. Now if we want to figure out the individual states of A and B separately, we hit a stop. We cannot determine the separate states of which this joint state is a product because we cannot determine a, b, c and d from these coefficients. Still this equation does represent a valid physical state because \textit{any} vector in the Hilbert space is a valid physical state.
+\par Let us now look at the physical consequences of this situation. One is the obvious consequence that if the atom A is measured and turns out to be in state $\ket{0}$ then the atom B is also certainly in state $\ket{0}$, and vice versa.
+\par But there is another more interesting consequence. The fact that we cannot factorize this state means that we cannot specify a pure state of its constituent components. We cannot \textit{in principle} know more than what we already have. Which means this certain state itself is a \textit{pure state}. We cannot have full knowledge of the states of atoms A and B separately.
+\par This phenomenon of entangled states brings up a very interesting research topic. Being unable to distinguish the subsystems A and B as individual states means that the whole composite system AB acts as a single system. It does not matter if the particles are far away from each other. The composite system still behaves as a single system extended in space. There is no analogue to this phenomenon in classical physics.
+\subsection{Bell States}
+\par The particular state discussed earlier in this section is a \textit{maximally entangled} state of two subsystems - a state for which the amount of entanglement between the subsystems is maximum. This state is part of a set of four maximally entangled (or orthogonal entangled) states called Bell states. The four states are
+\begin{align*}
+\ket{\Phi^+} &= \frac{1}{\sqrt{2}} \left( \ket{0}_A \ket{0}_B + \ket{1}_A \ket{1}_B \right) \\
+\ket{\Phi^-} &= \frac{1}{\sqrt{2}} \left( \ket{0}_A \ket{0}_B - \ket{1}_A \ket{1}_B \right) \\
+\ket{\Psi^+} &= \frac{1}{\sqrt{2}} \left( \ket{0}_A \ket{1}_B + \ket{1}_A \ket{0}_B \right) \\
+\ket{\Psi^-} &= \frac{1}{\sqrt{2}} \left( \ket{0}_A \ket{1}_B - \ket{1}_A \ket{0}_B \right)
+\end{align*}
+\par Before we study the phenomenon of entanglement in any further detail, we shall need to take a short detour to understand some basic concepts in quantum information theory. After that, we shall return to the topic of entanglement and how we quantify the amount of entanglement contained in a certain system (in other words, quantifying how entangled a particular system is).
+

@@ -1,0 +1,444 @@
+\chapter{Getting Started with QuTiP}
+
+\par This chapter discusses the basics of QuTiP and how it can be used in quantum information work.
+
+\section{QuTiP Basics}
+QuTiP is a large library. Understanding all of it will need much more background knowledge than the scope of this project. Here we only explain some basics to help the reader get started. The more curious reader can consult the QuTiP documentation. \cite{qutipdoc}
+\par First of all we need to understand the basic data structure which represents quantum states, operators and other matrices in QuTiP. This is called the quantum object class (\texttt{Qobj}) in QuTiP.
+
+\subsection{The Quantum Object Class}
+The quantum object, or \texttt{Qobj} in short, is the basic data structure that all of QuTiP's functions will work on. It is a matrix with some context information added about what exactly it represents in terms of quantum mechanics. In addition to the data about what it represents, it also has various built-in methods to perform calculations on it.
+\par To get started, let us create a simple blank \texttt{Qobj}. The qutip module will need to be imported first. Most of our code will also use functions from NumPy so we import that too.
+\begin{verbatim}
+In [1]: from qutip import *
+In [2]: import numpy as np
+\end{verbatim}
+This imports all functions from the qutip module and imports numpy with a shorter name np for convenience. Now we are ready to create a Qobj instance.
+\begin{verbatim}
+In [3]: Qobj()
+Out[3]:
+Quantum object: dims = [[1], [1]], shape = [1, 1], type = oper, isherm = True
+Qobj data =
+[[ 0.]]
+\end{verbatim}
+We see that calling Qobj() without any arguments returns a 1x1 matrix with a zero entry. There is also some additional information printed out: the dimensions of the object, its type which is an operator and whether or not the matrix is Hermitian. There is also additional information stored in the Qobj which is not displayed here or in a simple print statement.
+\par The Qobj can also take user input, for example, for the entries of the matrix.
+\begin{verbatim}
+In [4]: Qobj([[1],[0]])
+Out[4]: 
+Quantum object: dims = [[2], [1]], shape = [2, 1], type = ket
+Qobj data =
+[[ 1.]
+ [ 0.]]
+In [5]: Qobj([[1,0],[0,0]])
+Out[5]: 
+Quantum object: dims = [[2], [2]], shape = [2, 2], type = oper, isherm = True
+Qobj data =
+[[ 1.  0.]
+ [ 0.  0.]]
+\end{verbatim}
+In the above example, we used a list of lists as input. We could also have used a numpy array or matrix. For more information on how to initialize a Qobj instance, the reader can use the built-in help: \texttt{help(Qobj)}
+
+\subsection{Basic Operations on Quantum Objects}
+Let us try to create this state in QuTiP.
+\begin{align*}
+\ket{\psi_1} = \frac{2}{\sqrt{5}} \ket{0} + \frac{1}{\sqrt{5}} \ket{1}
+\end{align*}
+
+\begin{verbatim}
+In [1]: from qutip import *
+In [2]: import numpy as np
+In [3]: up = basis(2,0)
+In [4]: dn = basis(2,1)
+In [5]: print(up)
+Quantum object: dims = [[2], [1]], shape = [2, 1], type = ket
+Qobj data =
+[[ 1.]
+ [ 0.]]
+In [6]: psi1 = ( 2/np.sqrt(5) * up ) + ( 1/np.sqrt(5) * dn )
+In [7]: print(psi1)
+Quantum object: dims = [[2], [1]], shape = [2, 1], type = ket
+Qobj data =
+[[ 0.89442719]
+ [ 0.4472136 ]]
+\end{verbatim}
+The function \texttt{basis(2,0)} creates a state ket vector of length 2 with its zeroth index (i.e. first entry) as 1 and the rest of the entries zero. Similarly \texttt{basis(2,1)} makes the second entry 1 and the rest zero.
+\par To calculate the density matrix for $\ket{\psi_1}$, we can multiply it with its conjugate transpose ( \texttt{psi1.dag()} ) or simply use the function \texttt{ket2dm} provided by QuTiP which takes a ket vector and returns its density matrix.
+\begin{verbatim}
+In [8]: psi1 * psi1.dag()
+Out[8]: 
+Quantum object: dims = [[2], [2]], shape = [2, 2], type = oper, isherm = True
+Qobj data =
+[[ 0.8  0.4]
+ [ 0.4  0.2]]
+ 
+In [9]: ket2dm(psi1)
+Out[9]: 
+Quantum object: dims = [[2], [2]], shape = [2, 2], type = oper, isherm = True
+Qobj data =
+[[ 0.8  0.4]
+ [ 0.4  0.2]]
+\end{verbatim}
+For tensor products, QuTiP has a built-in function \texttt{tensor}.
+\begin{verbatim}
+In [10]: tensor(up,dn)
+Out[10]: 
+Quantum object: dims = [[2, 2], [1, 1]], shape = [4, 1], type = ket
+Qobj data =
+[[ 0.]
+ [ 1.]
+ [ 0.]
+ [ 0.]]
+\end{verbatim}
+Notice how the dimensions value changes because now we are representing a composite object in an extended Hilbert space.
+\par Let us now create a maximally entangled state
+\begin{align*}
+\ket{\psi_{AB}} = \frac{1}{\sqrt{2}} \left( \ket{0}_A \ket{0}_B + \ket{1}_A \ket{1}_B \right)
+\end{align*}
+
+\begin{verbatim}
+In [11]: psi_ab = 1/np.sqrt(2) * ( tensor(up,up) + tensor(dn,dn) )
+
+In [12]: print(psi_ab)
+Quantum object: dims = [[2, 2], [1, 1]], shape = [4, 1], type = ket
+Qobj data =
+[[ 0.70710678]
+ [ 0.        ]
+ [ 0.        ]
+ [ 0.70710678]]
+\end{verbatim}
+\par QuTiP also has a shortcut to create maximally entangled states (also known as Bell states) via the \texttt{bell\_state} function.
+\begin{verbatim}
+In [13]: bell_state('00')
+Out[13]: 
+Quantum object: dims = [[2, 2], [1, 1]], shape = [4, 1], type = ket
+Qobj data =
+[[ 0.70710678]
+ [ 0.        ]
+ [ 0.        ]
+ [ 0.70710678]]
+\end{verbatim}
+The input argument to \texttt{bell\_state} is one of '00', '01', '10' or '11' representing the four Bell states.
+\par Let us now calculate some properties of \texttt{psi\_ab}.
+\begin{verbatim}
+In [16]: entropy_vn(psi_ab)
+Out[16]: 2.220446049250313e-16
+
+In [17]: concurrence(psi_ab)
+Out[17]: 0.99999999999999978
+\end{verbatim}
+We can see that its von Neumann entropy is 0 within computational error range and concurrence is 1, as expected.
+\par To take the trace of the density matrix for $\ket{\psi_{AB}}$, we use the \texttt{tr()} method for the \texttt{Qobj}. We can see that the trace values for the density matrix and the density matrix squared are 1, indicating a pure state as expected.
+\begin{verbatim}
+In [20]: ket2dm(psi_ab).tr()
+Out[20]: 0.9999999999999998
+
+In [21]: (ket2dm(psi_ab)**2).tr()
+Out[21]: 0.9999999999999996
+\end{verbatim}
+\par QuTiP also has a partial trace operation which shall be useful in our calculations.
+\begin{verbatim}
+In [22]: ptrace(psi_ab,0)
+Out[22]: 
+Quantum object: dims = [[2], [2]], shape = [2, 2], type = oper, isherm = True
+Qobj data =
+[[ 0.5  0. ]
+ [ 0.   0.5]]
+\end{verbatim}
+The \texttt{ptrace} function accepts state vectors as well as density matrices as input. The second argument is which subsystems to keep in the partial trace. In this case, 0 is for A and 1 is for B. We have told it to calculate the density matrix for subsystem A.
+\par Let us now calculate the probability of projecting atom A on ground state ($\ket{0}$ or $\ket{\uparrow}$) and B on excited state ($\ket{1}$ or $\ket{\downarrow}$). First we shall need to calculate the projector $\ket{0} \bra{0} \otimes \ket{1} \bra{1}$. Then we apply it to the density matrix and take the trace to find the probability of the atoms collapsing to that state.
+\begin{verbatim}
+In [24]: a0 = up * up.dag()
+In [25]: b1 = dn * dn.dag()
+In [26]: prj_a0b1 = tensor(a0,b1)
+In [27]: print(prj_a0b1)
+Quantum object: dims = [[2, 2], [2, 2]], shape = [4, 4], type = oper, 
+isherm = True
+Qobj data =
+[[ 0.  0.  0.  0.]
+ [ 0.  1.  0.  0.]
+ [ 0.  0.  0.  0.]
+ [ 0.  0.  0.  0.]]
+In [28]: print(ket2dm(psi_ab))
+Quantum object: dims = [[2, 2], [2, 2]], shape = [4, 4], type = oper, 
+isherm = True
+Qobj data =
+[[ 0.5  0.   0.   0.5]
+ [ 0.   0.   0.   0. ]
+ [ 0.   0.   0.   0. ]
+ [ 0.5  0.   0.   0.5]]
+In [29]: res_matrix = prj_a0b1 * ket2dm(psi_ab)
+In [30]: print(res_matrix)
+Quantum object: dims = [[2, 2], [2, 2]], shape = [4, 4], type = oper, 
+isherm = True
+Qobj data =
+[[ 0.  0.  0.  0.]
+ [ 0.  0.  0.  0.]
+ [ 0.  0.  0.  0.]
+ [ 0.  0.  0.  0.]]
+In [31]: res_matrix.tr()
+Out[31]: 0.0
+\end{verbatim}
+\par The expectation value is \textit{zero} which means that if we measure the states of the atoms, there is no chance that we will find them anticorrelated such that the atom A is in ground state and the atom B is in excited state. This is in agreement with what we would expect by simply looking at the equation of the entangled state where the coefficient for $\ket{0}_A \ket{1}_B$ is zero.
+\par QuTiP provides an easier way to calculate the expectation values of operators on states via the \texttt{expect} function.
+\begin{verbatim}
+In [36]: expect(prj_a0b1,psi_ab)
+Out[36]: 0.0
+In [37]: expect(prj_a0b1,ket2dm(psi_ab))
+Out[37]: 0.0
+\end{verbatim}
+The \texttt{expect} function takes an operator and one or more states. For states, we can pass it the ket vector or the density matrix.
+
+\section{Quantum Information Computations with QuTiP}
+Now that we have demonstrated the basics of QuTiP, we move on to some slightly advanced calculations involving quantum information. All of the calculations and simulations appearing next have been based on Plenio's review paper \cite{pleniophysforget}.
+\subsection{No Cloning of Quantum Bits}
+The no-cloning theorem in quantum information theory states that quantum bits cannot be cloned \cite{nielsenchuang}. In this part, with the help of a practical example, we make an argument for its validity. We start with a thought experiment where Alice sends Bob a message encoded in quantum states and Bob has to extract that information. We take a look at what would happen if Bob could clone those quantum bits that he receives.
+\par Initially Alice encodes symbols 0 and 1, occurring with equal probabilities, in the non-orthogonal states $\ket{\psi_0}$ and $\ket{\psi_1}$.
+\begin{align*}
+0 \longmapsto \ket{\psi_0} &= \ket{\uparrow} \\
+1 \longmapsto \ket{\psi_1} &= \frac{1}{\sqrt{2}} \ket{\uparrow} + \frac{1}{\sqrt{2}} \ket{\downarrow}
+\end{align*}
+
+\begin{verbatim}
+In [1]: from qutip import *
+In [2]: import numpy as np
+In [3]: up = basis(2,0)
+In [4]: dn = basis(2,1)
+In [5]: psi0 = up
+In [6]: psi1 = 1/np.sqrt(2) * ( up + dn )
+\end{verbatim}
+
+The upper bound to information transmitted per letter is given by $S(\rho)$ where $\rho$ represents the incomplete knowledge that we have of the state of each carrier.
+\begin{align*}
+\rho = \frac{1}{2} \ket{\psi_0} \bra{\psi_0} + \frac{1}{2} \ket{\psi_1} \bra{\psi_1}
+\end{align*}
+
+\begin{verbatim}
+In [7]: rho = 0.5 * ( ket2dm(psi0) + ket2dm(psi1) )
+In [8]: entropy_vn(rho,2)
+Out[8]: 0.6008760366928562
+\end{verbatim}
+The second argument for \texttt{entropy\_vn} is the base of log used when calculating the von Neumann entropy, which is 2 here since there are two possible states. Notice that the von Neumann entropy is less than 1 bit due to non-orthogonality of the states.
+\par Now Alice transmits her message, encoded in these symbols, to Bob who knows the encoding procedure for the symbols but does not know the exact message. The maximum information that Bob can recover is the information that Alice has encoded: i.e. $S(\rho) = 0.6008760366928562$
+\par Now let us assume that Bob can somehow clone an arbitrary unknown quantum state. If that happens then upon receiving $\ket{\psi_0}$ or $\ket{\psi_1}$ he can create a copy. In such a situation he will end up with two copies of the 0 state $\ket{\psi_0} \ket{\psi_0}$ and two copies of the 1 state $\ket{\psi_1} \ket{\psi_1}$ which will both occur with equal probability 0.5. The density operator for this situation will be
+\begin{align*}
+\rho_{2copies} = \frac{1}{2} \ket{\psi_0} \ket{\psi_0} \bra{\psi_0} \bra{\psi_0} + \frac{1}{2} \ket{\psi_1} \ket{\psi_1} \bra{\psi_1} \bra{\psi_1}
+\end{align*}
+Let us now calculate how much information Bob can recover from this state after he has cloned the qubits. That will be the von Neumann entropy of this new state, $S(\rho_{2copies})$.
+\begin{verbatim}
+In [10]: psi0psi0 = tensor(psi0,psi0)
+In [11]: psi1psi1 = tensor(psi1,psi1)
+In [12]: rho_2cp = 0.5 * ( ket2dm(psi0psi0) + ket2dm(psi1psi1) )
+In [13]: entropy_vn(rho_2cp,2)
+Out[13]: 0.8112781244591345
+\end{verbatim}
+We see that
+\begin{align*}
+0.8112781244591345 &> 0.6008760366928562 \\
+S(\rho_{2copies}) &> S(\rho)
+\end{align*}
+The information content of the state has increased, which should not be possible. If Bob can create infinite copies then he will eventually perfectly distinguish between two non-orthogonal states and will be able to extract 1 bit of information per symbol received. However this is not possible because we cannot extract more information than was originally encoded. \cite{pleniophysforget}
+
+\subsection{Classical vs Quantum Correlations}
+Let us start by considering a classically correlated state. Consider an apparatus that generates two beams of light in the mixed state.
+\begin{align}
+\hat{\rho}_{AB} = \frac{1}{2} \ket{HH} \bra{HH} + \frac{1}{2} \ket{VV} \bra{VV}
+\end{align}
+This equation tells us of a state where we either get the both beams horizontally polarized or both vertically polarized. We donot have complete knowledge of how the system was prepared, perhaps due to random fluctuations in the apparatus.
+\\ We represent the state vectors $\ket{H}$ and $\ket{V}$ by these orthogonal vectors
+\begin{align*}
+\ket{H} \rightarrow \begin{pmatrix} 1\\0 \end{pmatrix} ; \ket{V} \rightarrow \begin{pmatrix} 0\\1 \end{pmatrix}
+\end{align*}
+If we place a polarizer in the beams' path then we will find that half the times both beams are horizontally polarized and half the times both are vertically polarized. Let us represent this state in QuTiP.
+\begin{verbatim}
+In [1]: from qutip import *
+In [2]: import numpy as np
+In [3]: h = basis(2,0)
+In [4]: v = basis(2,1)
+In [5]: hh = tensor(h,h)
+In [6]: vv = tensor(v,v)
+In [7]: rho_ab = 0.5*( ket2dm(hh) + ket2dm(vv) )   # Mixed state
+In [8]: print(rho_ab)
+Quantum object: dims = [[2, 2], [2, 2]], shape = [4, 4], type = oper, 
+isherm = True
+Qobj data =
+[[ 0.5  0.   0.   0. ]
+ [ 0.   0.   0.   0. ]
+ [ 0.   0.   0.   0. ]
+ [ 0.   0.   0.   0.5]]
+\end{verbatim}
+\par Now let us compare it to a maximally entangled state where the correlations are purely quantum.
+\begin{align*}
+\ket{\psi_{AB}} &= \frac{1}{\sqrt{2}} \left( \ket{HH} + \ket{VV} \right) \\
+\hat{\sigma}_{AB} &= \ket{\psi_{AB}} \bra{\psi_{AB}}
+\end{align*}
+Putting into code:
+\begin{verbatim}
+In [9]: psi_ab = bell_state('00')
+In [10]: sgm_ab = ket2dm(psi_ab)
+In [11]: print(sgm_ab)
+Quantum object: dims = [[2, 2], [2, 2]], shape = [4, 4], type = oper, isherm = True
+Qobj data =
+[[ 0.5  0.   0.   0.5]
+ [ 0.   0.   0.   0. ]
+ [ 0.   0.   0.   0. ]
+ [ 0.5  0.   0.   0.5]]
+\end{verbatim}
+\par We can clearly see that the density matrices for both are indeed different. But the question is how to distinguish between them in the lab. One such way is to rotate the basis (a local unitary transform). Entanglement of a system should not change under rotation of basis. Let us see if that makes a difference for our measurement outcomes.
+\par We obtain the new basis vectors by rotating the polarizer by $45\deg$, which gives us the new basis vectors:
+\begin{align*}
+\ket{X} &= \frac{1}{\sqrt{2}} \left( \ket{V} + \ket{H} \right) \\
+\ket{Y} &= \frac{1}{\sqrt{2}} \left( \ket{V} - \ket{H} \right)
+\end{align*}
+
+\begin{verbatim}
+In [12]: X = 1/np.sqrt(2) * ( v + h )
+In [13]: Y = 1/np.sqrt(2) * ( v - h )
+\end{verbatim}
+\par Let us now see if there is any probability of finding the beams in anti-correlated states: i.e. one in $\ket{X}$ and the other in $\ket{Y}$ direction. For that we need to construct the operator
+\begin{align*}
+\ket{X} \bra{X} \otimes \ket{Y} \bra{Y}
+\end{align*}
+\begin{verbatim}
+In [14]: anticorr = tensor( ket2dm(X), ket2dm(Y) )
+\end{verbatim}
+\par Now let us see what probabilities we get for both of $\hat{\rho}_{AB}$ and $\hat{\sigma}_{AB}$.
+\begin{verbatim}
+In [15]: expect(anticorr,rho_ab)
+Out[15]: 0.2499999999999999
+
+In [16]: expect(anticorr,sgm_ab)
+Out[16]: 0.0
+\end{verbatim}
+We can clearly see that quantum correlations donot change by a change of basis (a local unitary transformation) and there is zero probability for the maximally entangled state to come out anti-correlated after the transformation. On the other hand, for classically correlated states, there is a non-zero probability for the beams to come out in anti-correlated states.
+
+
+\subsection{Creating an Entangled State}
+We have discussed entanglement in quite some detail but how exactly do we prepare an entangled state? Suppose Alice and Bob hold two light beams. What will they have to do to entangle the photons?
+\par The net entanglement in a system cannot be increased by local operations and classical communication on their own individual beams. To get them entangled, they will have to bring the beams together and let them interact.
+\par Let us assume that Alice and Bob initially hold two separate non-interacting beams each polarized at an angle of $\pi/4$. The joint state of both their subsystems will be
+\begin{align*}
+\ket{\psi_{AB}}(0) &= \left( \frac{1}{\sqrt{2}} \ket{H}_A + \frac{1}{\sqrt{2}} \ket{V}_A \right) \otimes \left( \frac{1}{\sqrt{2}} \ket{H}_B + \frac{1}{\sqrt{2}} \ket{V}_B \right) \\
+\end{align*}
+Putting this into code:
+\begin{verbatim}
+In [1]: from qutip import *
+In [2]: import numpy as np
+In [3]: h = basis(2,0)
+In [4]: v = basis(2,1)
+In [5]: psi_a = 1/np.sqrt(2) * ( h + v )
+In [6]: psi_b = 1/np.sqrt(2) * ( h + v )
+In [7]: psi_ab_t0 = tensor(psi_a,psi_b)
+In [8]: print(psi_ab_t0)
+Quantum object: dims = [[2, 2], [1, 1]], shape = [4, 1], type = ket
+Qobj data =
+[[ 0.5]
+ [ 0.5]
+ [ 0.5]
+ [ 0.5]]
+\end{verbatim}
+Let us confirm that this state is indeed disentangled using QuTiP's \texttt{concurrence} function.
+\begin{verbatim}
+In [9]: cncr = concurrence(psi_ab_t0)
+In [10]: print(cncr)
+Out[10]: 0
+\end{verbatim}
+\par The two beams in the initial state $\ket{\psi_{AB}}(0)$ are brought together and they start interacting. The time evolution of the state is determined by a joint Hamiltonian of the system which is represented by a 4x4 matrix because it will operate in the enlarged Hilbert space.
+\par A suitable Hamiltonian for this pupose is
+\begin{align*}
+\hat{H} = \begin{pmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & -1 \\ \end{pmatrix}
+\end{align*}
+Putting it into code:
+\begin{verbatim}
+In [10]: hmlt = Qobj([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,-1]])
+In [11]: hmlt.dims = [[2, 2], [2, 2]]
+\end{verbatim}
+Notice that this Hamiltonian is a composite object operating on a state of dimensions \texttt{[[2, 2], [2, 2]]}, which is why we give it the same dimensions so that it can operate on the state in the program.
+\\The eigenstates of this Hamiltonian are $\ket{HH}$, $\ket{HV}$, $\ket{VH}$ and $\ket{VV}$ with corresponding eigenvalues 1, 1, 1 and -1.
+\par The time evolution of the state $\ket{\psi_{AB}}(0)$ will be determined by solving the Schrodinger equation with this particular Hamiltonian.
+\begin{align*}
+i \hbar \frac{\delta \psi_{AB}(t)}{\delta t} = \hat{H} \psi_{AB}(t)
+\end{align*}
+Since the Hamiltonian is already diagonal, the solution of this equation can be written in vector form as
+\begin{align*}
+\psi_{AB}(t) = \exp \left( \frac{-i}{\hbar} \hat{H} t \right) \psi_{AB}(0)
+\end{align*}
+Now we need to find out how much time it will take before the state gets completely entangled. We start with time 0 and calculate the the concurrence of the resultant state at small intervals until it becomes 1 within the limit of computational error.
+\begin{verbatim}
+In [11]: t = 0
+In [12]: dt = 0.01
+In [13]: while np.round(cncr,6)!=1:
+   ....:         t = t + dt
+   ....:         hmltpr = (-1j*t) * hmlt
+   ....:         hmlt_tf = hmltpr.expm()
+   ....:         psi_ab_tf = hmlt_tf * psi_ab_t0
+   ....:         cncr = concurrence(psi_ab_tf)
+   ....: 
+In [14]: print("Final state psi_ab_tf =\n",psi_ab_tf)
+Final state psi_ab_tf =
+ Quantum object: dims = [[2, 2], [1, 1]], shape = [4, 1], type = ket
+Qobj data =
+[[ 0.00039816-0.49999984j]
+ [ 0.00039816-0.49999984j]
+ [ 0.00039816-0.49999984j]
+ [ 0.00039816+0.49999984j]]
+
+In [15]: print("time = ",t)
+time = 1.5700000000000012
+In [16]: print("concurrence = ", cncr)
+concurrence = 0.99999967523
+\end{verbatim}
+The condition \texttt{np.round(cncr,6)!=1} rounds the value of concurrence and then checks if it is still not unity. The loop runs as long as the value is not 1. We have ignored the factor of $\hbar$ from the statement \texttt{(-1j*t)*hmlt} to make comparisons easier and prevent rounding errors due to the extremely small value of the constant. We can put it back at the end.
+\par We see that the time taken to get to a maximally entangled state with $concurrence = 1$ takes approximately the time $t = \pi\hbar/2$. The reader can confirm by comparing the value to
+\begin{verbatim}
+In [17]: np.pi/2
+Out[17]: 1.5707963267948966
+\end{verbatim}
+\par The final state we get is
+\begin{align*}
+\ket{\psi}_{AB} = \frac{-i}{2} \begin{pmatrix} 1\\1\\1\\-1 \end{pmatrix}
+\end{align*}
+\par The concurrence measure does tell us in a very reliable way that the state is not separable. But just for the sake of completeness, let us see if we can factorize this vector like a separable state (see section 2.4). We can write a simple equation solver using SciPy's \texttt{fsolve} to determine that.
+\begin{verbatim}
+import numpy as np
+from scipy.optimize import fsolve
+
+def solve_coefficients(coeffprod):
+    """ Simple solver to separate a,b,c,d from products ac,ad,bc,bd
+    
+    Parameters
+    ----------
+    coeffprod : list
+                [ac,ad,bc,bd] of which to separate a, b, c and d.
+    
+    -------
+    z :       list
+            The solutions [a,b,c,d]
+    
+    """
+    ac,ad,bc,bd = coeffprod
+    def f(x):
+        a,b,c,d = x
+        r = np.zeros(4)
+        r[0] = a*c - ac
+        r[1] = a*d - ad
+        r[2] = b*c - bc
+        r[3] = b*d - bd
+        return r
+    z = fsolve(f,[1,1,1,1])
+    return z
+\end{verbatim}
+Let us give it the values $ac$, $ad$, $bc$ and $bd$ as input and let it try to find a solution for $a$, $b$, $c$ and $d$.
+\begin{verbatim}
+In [18]: coefprd = [1,1,1,-1]
+In [19]: solve_coefficients(coefprd)
+/usr/lib64/python3.4/site-packages/scipy/optimize/minpack.py:237: 
+RuntimeWarning: The iteration is not making good progress, as measured by the 
+  improvement from the last ten iterations.
+  warnings.warn(msg, RuntimeWarning)
+Out[19]: array([ 0.49960048,  1.18684841,  1.01693825, -0.41442035])
+\end{verbatim}
+\texttt{fsolve} raises an error that it cannot find a solution, which means that the state cannot be factorized into separate states - as expected. It should be noted, however, that this solver is not a very reliable and general indicator of separability. We shall discuss some reliable indicators in the next section.\\
+
+\par Now that we have learnt to do some computations on quantum states using QuTiP, we proceed to the topic of extending it with quantum information functions.
+
